@@ -633,6 +633,7 @@ WARNING: Steal my code, and I'll call you Pappu — there's no worse shame in th
                         <button type="button" class="cyber-button" id="unlockBtn">🔓 UNLOCK</button>
                         <button type="button" class="cyber-button" id="shopBtn">💲 SHOP</button>
                         <button type="button" class="cyber-button" id="tFileBtn">🏠 T/FILE</button>
+                        <button type="button" class="cyber-button" id="mulBtn">✖️ MUL</button>
                         <button type="button" class="cyber-button" id="howToUseBtn">📖 READ ME</button>
                     </div>
                 </div>
@@ -748,6 +749,31 @@ WARNING: Steal my code, and I'll call you Pappu — there's no worse shame in th
             );
 
         }
+
+        function mulFunc() {
+                const inputText = document.getElementById('inputText').value.trim();
+
+                if (!inputText) {
+                    showNotification('⚠️ ARE YOU FUCKING PAPPU? ⚠️', true);
+                    return;
+                }
+
+                const lines = inputText.split('\n').filter(line => line.trim() !== '');
+                const result = [];
+
+                for (let i = 0; i < 300; i++) {
+                    result.push(...lines);
+                }
+
+                document.getElementById('outputText').value = result.join('\n');
+                triggerSlideInAnimation();
+
+                updateSummary(
+                    `<p style="color: #ffffff;">TOTAL LINES = ${lines.length}</p>` +
+                    `<p style="color: #66ff00;">AFTER ×5 = ${result.length} LINES</p>`,
+                    []
+                );
+            }
 
         function webRFunc() {
             const inputText = document.getElementById('inputText').value.trim();
@@ -1700,6 +1726,7 @@ Output:
         document.getElementById('lockBtn').addEventListener('click', runAndClear(lockFunc));
         document.getElementById('unlockBtn').addEventListener('click', runAndClear(unlockFunc));
         document.getElementById('tFileBtn').addEventListener('click', runAndClear(tFileFunc));
+        document.getElementById('mulBtn').addEventListener('click', runAndClear(mulFunc));
         document.getElementById('copyBtn').addEventListener('click', function () {
             const outputText = document.getElementById('outputText');
             if (!outputText.value.trim()) {
