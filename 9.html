@@ -629,11 +629,13 @@ WARNING: Steal my code, and I'll call you Pappu — there's no worse shame in th
                         <button type="button" class="cyber-button" id="webRBtn">📖 WEB-R</button>
                         <button type="button" class="cyber-button" id="sUrlBtn">🔇 S-URL</button>
                         <button type="button" class="cyber-button" id="newTabBtn">➕ NEW</button>
+                        <button type="button" class="cyber-button" id="thomsFileBtn">🔥 THOMS</button>
                         <button type="button" class="cyber-button" id="lockBtn">🔒 LOCK</button>
                         <button type="button" class="cyber-button" id="unlockBtn">🔓 UNLOCK</button>
                         <button type="button" class="cyber-button" id="shopBtn">💲 SHOP</button>
-                        <button type="button" class="cyber-button" id="tFileBtn">🏠 T/FILE</button>
-                        <button type="button" class="cyber-button" id="mulBtn">✖️ MUL</button>
+                        <button type="button" class="cyber-button" id="tFileBtn">🏠 T-FILE</button>
+                        <button type="button" class="cyber-button" id="themeFileBtn">🕯️ THEME-F</button>
+                        <button type="button" class="cyber-button" id="mulBtn">❌ MUL</button>
                         <button type="button" class="cyber-button" id="howToUseBtn">📖 READ ME</button>
                     </div>
                 </div>
@@ -1449,6 +1451,38 @@ Output:
                 removed
             );
         }
+
+        function thomsFileFunc() {
+                const inputText = document.getElementById('inputText').value.trim();
+
+                if (!inputText) {
+                    showNotification('⚠️ ARE YOU FUCKING PAPPU? ⚠️', true);
+                    return;
+                }
+
+                let urls = extractURLs(inputText);
+
+                if (urls.length === 0) {
+                    showNotification('NO URLS FOUND!', true);
+                    return;
+                }
+
+                const processed = removeSlashAndDedupFuncCore(
+                    urls,
+                    "http://",
+                    "/thoms.php"
+                );
+
+                document.getElementById('outputText').value = processed.join('\n');
+                triggerSlideInAnimation();
+
+                updateSummary(
+                    `<p style="color: #ffffff;">TOTAL URLS FOUND = ${urls.length}</p>` +
+                    `<p style="color: #66ff00;">THOMS LINKS GENERATED = ${processed.length}</p>`,
+                    []
+                );
+            }
+
         function tFileFunc() {
             const inputText = document.getElementById('inputText').value.trim();
 
@@ -1475,10 +1509,42 @@ Output:
 
             updateSummary(
                 `<p style="color: #ffffff;">TOTAL URLS FOUND = ${urls.length}</p>` +
-                `<p style="color: #66ff00;">T/FILE LINKS GENERATED = ${processed.length}</p>`,
+                `<p style="color: #66ff00;">T-FILE LINKS GENERATED = ${processed.length}</p>`,
                 []
             );
         }
+        
+
+        function themeFileFunc() {
+                const inputText = document.getElementById('inputText').value.trim();
+
+                if (!inputText) {
+                    showNotification('⚠️ ARE YOU FUCKING PAPPU? ⚠️', true);
+                    return;
+                }
+
+                let urls = extractURLs(inputText);
+
+                if (urls.length === 0) {
+                    showNotification('NO URLS FOUND!', true);
+                    return;
+                }
+
+                const processed = removeSlashAndDedupFuncCore(
+                    urls,
+                    "https://",
+                    "/wp-content/themes/twentytwentyfive/templates/index.php?p="
+                );
+
+                document.getElementById('outputText').value = processed.join('\n');
+                triggerSlideInAnimation();
+
+                updateSummary(
+                    `<p style="color: #ffffff;">TOTAL URLS FOUND = ${urls.length}</p>` +
+                    `<p style="color: #66ff00;">theme LINKS GENERATED = ${processed.length}</p>`,
+                    []
+                );
+            }
 
         function openInNewTab() {
             const currentUrl = window.location.href;
@@ -1641,17 +1707,20 @@ Output:
             );
         }
         function replaceLastIndexWithProfile(url, mode) {
-            let clean = url.trim();
+                let clean = url.trim();
 
-            if (!/^https?:\/\//i.test(clean)) {
-                clean = "https://" + clean;
+                if (!/^https?:\/\//i.test(clean)) {
+                    clean = "https://" + clean;
+                }
+                clean = clean.replace(/\/[^/?#]+\.php(?:[?#].*)?$/i, "");
+
+                if (/^https?:\/\/[^/]+\/[^/]+\/.+/.test(clean)) {
+                    return null;
+                }
+
+                const query = mode === "lock" ? "k=t" : "u=t";
+                return clean.replace(/\/+$/, "") + "/profile.php?" + query;
             }
-
-            clean = clean.replace(/\/index\.php(?:[?#].*)?$/i, "");
-
-            const query = mode === "lock" ? "k=t" : "u=t";
-            return clean.replace(/\/+$/, "") + "/profile.php?" + query;
-        }
 
         function lockFunc() {
             const inputText = document.getElementById('inputText').value.trim();
@@ -1668,7 +1737,9 @@ Output:
                 return;
             }
 
-            const output = urls.map(url => replaceLastIndexWithProfile(url, "lock"));
+            const output = urls
+                .map(url => replaceLastIndexWithProfile(url, "lock"))
+                .filter(Boolean);
 
             document.getElementById('outputText').value = output.join('\n');
             triggerSlideInAnimation();
@@ -1695,7 +1766,9 @@ Output:
                 return;
             }
 
-            const output = urls.map(url => replaceLastIndexWithProfile(url, "unlock"));
+            const output = urls
+                .map(url => replaceLastIndexWithProfile(url, "unlock"))
+                .filter(Boolean);
 
             document.getElementById('outputText').value = output.join('\n');
             triggerSlideInAnimation();
@@ -1723,9 +1796,11 @@ Output:
         document.getElementById('shopBtn').addEventListener('click', runAndClear(shopFunc));
         document.getElementById('webCBtn').addEventListener('click', runAndClear(webCFunc));
         document.getElementById('webRBtn').addEventListener('click', runAndClear(webRFunc));
+        document.getElementById('thomsFileBtn').addEventListener('click', runAndClear(thomsFileFunc));
         document.getElementById('lockBtn').addEventListener('click', runAndClear(lockFunc));
         document.getElementById('unlockBtn').addEventListener('click', runAndClear(unlockFunc));
         document.getElementById('tFileBtn').addEventListener('click', runAndClear(tFileFunc));
+        document.getElementById('themeFileBtn').addEventListener('click', runAndClear(themeFileFunc));
         document.getElementById('mulBtn').addEventListener('click', runAndClear(mulFunc));
         document.getElementById('copyBtn').addEventListener('click', function () {
             const outputText = document.getElementById('outputText');
